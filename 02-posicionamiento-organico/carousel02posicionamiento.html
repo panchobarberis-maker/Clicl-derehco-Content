@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Click Derecho · Carrusel 4:5 — Posicionamiento Orgánico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:  #d4621a;
+      --orange2: #e87428;
+      --yellow:  #f5b800;
+      --black:   #0a0602;
+      --dark:    #150d04;
+      --white:   #ffffff;
+      --offwhite:#f0ebe4;
+      --muted:   rgba(240,235,228,0.62);
+    }
+
+    body {
+      background: #000;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .stage {
+      width: 1080px;
+      height: 1350px;
+      transform-origin: center center;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .slide.active { opacity: 1; pointer-events: all; }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center top;
+      z-index: 0;
+    }
+    .bg-solid { position: absolute; inset: 0; z-index: 0; }
+
+    .ov-dark {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to top,
+        rgba(10,6,2,0.98) 0%, rgba(10,6,2,0.92) 30%,
+        rgba(10,6,2,0.55) 58%, rgba(10,6,2,0.12) 100%);
+    }
+    .ov-heavy { position: absolute; inset: 0; background: rgba(10,6,2,0.68); z-index: 1; }
+    .ov-stripe {
+      position: absolute; top: 0; left: 0; right: 0; height: 6px; z-index: 3;
+      background: linear-gradient(90deg, var(--orange), var(--yellow), var(--orange));
+    }
+
+    .content {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column;
+      padding: 64px 72px 72px;
+    }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0; margin-top: 8px;
+    }
+    .handle {
+      font-family: 'Montserrat', sans-serif; font-weight: 700;
+      font-size: 18px; letter-spacing: 0.06em; color: var(--white); opacity: 0.9;
+    }
+    .slide-num {
+      font-family: 'Montserrat', sans-serif; font-weight: 800;
+      font-size: 15px; letter-spacing: 0.12em; color: var(--orange2);
+    }
+
+    .spacer { flex: 1; }
+    .body { flex-shrink: 0; }
+
+    .tag {
+      display: inline-flex;
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 15px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--black); background: var(--orange);
+      padding: 7px 18px; margin-bottom: 22px;
+    }
+
+    .headline {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 92px; line-height: 0.93; letter-spacing: -0.01em;
+      color: var(--white); text-transform: uppercase; margin-bottom: 26px;
+    }
+    .headline .hl  { color: var(--yellow); }
+    .headline .hl2 { color: var(--orange2); }
+
+    .copy {
+      font-size: 22px; line-height: 1.65;
+      color: var(--muted); font-weight: 300; max-width: 700px;
+    }
+    .copy b { color: var(--offwhite); font-weight: 500; }
+
+    .swipe {
+      display: inline-flex; align-items: center; gap: 10px; margin-top: 30px;
+      font-family: 'Montserrat', sans-serif; font-weight: 700;
+      font-size: 15px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--orange2);
+    }
+
+    .ghost {
+      position: absolute; right: 48px; bottom: 180px;
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 320px; line-height: 1;
+      color: rgba(212,98,26,0.09);
+      pointer-events: none; user-select: none; z-index: 2;
+    }
+
+    .dots { display: flex; gap: 6px; margin-top: 36px; }
+    .dot {
+      height: 4px; width: 20px; border-radius: 2px;
+      background: rgba(255,255,255,0.15); transition: all 0.3s;
+    }
+    .dot.on { background: var(--orange); width: 38px; }
+
+    .cover-big {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 100px; line-height: 0.9; color: var(--white);
+      text-transform: uppercase; margin-bottom: 28px; letter-spacing: -0.01em;
+    }
+    .cover-big .hl { color: var(--yellow); }
+
+    .cta-tag {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--yellow); margin-bottom: 20px;
+    }
+    .cta-big {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 98px; line-height: 0.9; color: var(--white);
+      text-transform: uppercase; margin-bottom: 28px; letter-spacing: -0.01em;
+    }
+    .cta-big .hl { color: var(--yellow); }
+    .cta-copy {
+      font-size: 22px; line-height: 1.65; color: var(--muted);
+      font-weight: 300; max-width: 620px; margin-bottom: 44px;
+    }
+    .cta-handle {
+      font-family: 'Montserrat', sans-serif; font-weight: 900;
+      font-size: 28px; letter-spacing: 0.06em; color: var(--orange2); margin-bottom: 20px;
+    }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--orange); color: var(--white);
+      font-family: 'Montserrat', sans-serif; font-weight: 800;
+      font-size: 18px; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 18px 44px; border-radius: 4px;
+    }
+
+    .controls {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(0,0,0,0.82); backdrop-filter: blur(16px);
+      border: 1px solid rgba(212,98,26,0.35); border-radius: 100px;
+      padding: 10px 28px; z-index: 9999;
+    }
+    .ctrl {
+      background: none; border: none; color: rgba(255,255,255,0.65);
+      cursor: pointer; font-size: 18px; padding: 4px 10px;
+      transition: color 0.2s; font-family: inherit;
+    }
+    .ctrl:hover { color: var(--orange2); }
+    .ctrl-info {
+      font-size: 12px; letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.4); min-width: 48px; text-align: center;
+    }
+    .ctrl-info b { color: var(--orange2); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <!-- SLIDE 1 · COVER -->
+  <div class="slide active">
+    <div class="bg" style="background-image:url('../imagenes/56b223b9cfdcf454b513704e6e401fcd.jpg'); background-position:60% top;"></div>
+    <div class="ov-heavy"></div><div class="ov-dark"></div><div class="ov-stripe"></div>
+    <div class="content">
+      <div class="topbar">
+        <div class="handle">@clickderechomkt</div>
+        <div class="slide-num">01 / 07</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="body">
+        <div class="cover-big">¿TU ESTUDIO<br>APARECE EN<br><span class="hl">GOOGLE?</span></div>
+        <div class="copy">Si no te encuentran, no existís. Todo lo que necesitás saber sobre posicionamiento orgánico para estudios jurídicos.</div>
+        <div class="swipe">DESLIZÁ &nbsp;→</div>
+        <div class="dots">
+          <div class="dot on"></div><div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 · QUÉ ES -->
+  <div class="slide">
+    <div class="bg" style="background-image:url('../imagenes/910be6984780ec95840f716bbeb4caa1.jpg');"></div>
+    <div class="ov-heavy"></div><div class="ov-dark"></div><div class="ov-stripe"></div>
+    <div class="ghost">01</div>
+    <div class="content">
+      <div class="topbar">
+        <div class="handle">@clickderechomkt</div>
+        <div class="slide-num">02 / 07</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="body">
+        <div class="tag">¿Qué es?</div>
+        <div class="headline">APARECER EN<br>GOOGLE SIN<br><span class="hl">PAGAR</span></div>
+        <div class="copy">El posicionamiento orgánico (SEO) es lograr que tu estudio aparezca en los primeros resultados cuando alguien busca <b>"abogado laboral en Buenos Aires"</b> — sin pagar publicidad.</div>
+        <div class="dots">
+          <div class="dot"></div><div class="dot on"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 · POR QUÉ IMPORTA -->
+  <div class="slide">
+    <div class="bg" style="background-image:url('../imagenes/9b55dd017a0cb2637450853eb0b716e6.jpg'); background-position:center 20%;"></div>
+    <div class="ov-heavy"></div><div class="ov-dark"></div><div class="ov-stripe"></div>
+    <div class="ghost">02</div>
+    <div class="content">
+      <div class="topbar">
+        <div class="handle">@clickderechomkt</div>
+        <div class="slide-num">03 / 07</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="body">
+        <div class="tag">Por qué importa</div>
+        <div class="headline">EL 90% DE TUS<br>CLIENTES<br><span class="hl">BUSCAN ONLINE</span></div>
+        <div class="copy">Antes de llamar a un abogado, la gente busca en Google. <b>Si no aparecés en los primeros resultados, existe tu competencia.</b></div>
+        <div class="dots">
+          <div class="dot"></div><div class="dot"></div><div class="dot on"></div>
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 · BENEFICIO 1 -->
+  <div class="slide">
+    <div class="bg" style="background-image:url('../imagenes/37792a08abe9b145fd51a4b1c3aa9ebd.jpg'); background-position:center 12%;"></div>
+    <div class="ov-heavy"></div><div class="ov-dark"></div><div class="ov-stripe"></div>
+    <div class="ghost">03</div>
+    <div class="content">
+      <div class="topbar">
+        <div class="handle">@clickderechomkt</div>
+        <div class="slide-num">04 / 07</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="body">
+        <div class="tag">Beneficio 01</div>
+        <div class="headline">CONSULTAS<br>SIN PAGAR<br><span class="hl">POR CLIC</span></div>
+        <div class="copy">La publicidad paga para cuando dejás de invertir. El SEO trabaja <b>24/7 sin costo por consulta</b>. Es el activo más rentable a largo plazo.</div>
+        <div class="dots">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 · BENEFICIO 2 -->
+  <div class="slide">
+    <div class="bg" style="background-image:url('../imagenes/799cf065c966649410e4d60099dab5d0.jpg'); background-position:center 18%;"></div>
+    <div class="ov-heavy"></div><div class="ov-dark"></div><div class="ov-stripe"></div>
+    <div class="ghost">04</div>
+    <div class="content">
+      <div class="topbar">
+        <div class="handle">@clickderechomkt</div>
+        <div class="slide-num">05 / 07</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="body">
+        <div class="tag">Beneficio 02</div>
+        <div class="headline">CONSTRUÍS<br><span class="hl">AUTORIDAD</span><br>Y CONFIANZA</div>
+        <div class="copy">Aparecer primero en Google es una señal de credibilidad. <b>El cliente que te encuentra orgánicamente ya llega predispuesto a confiar en vos.</b></div>
+        <div class="dots">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 · BENEFICIO 3 -->
+  <div class="slide">
+    <div class="bg" style="background-image:url('../imagenes/4ea19ccded797e97ecd26f38d614f0c9.jpg'); background-position:55% top;"></div>
+    <div class="ov-heavy"></div><div class="ov-dark"></div><div class="ov-stripe"></div>
+    <div class="ghost">05</div>
+    <div class="content">
+      <div class="topbar">
+        <div class="handle">@clickderechomkt</div>
+        <div class="slide-num">06 / 07</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="body">
+        <div class="tag">Beneficio 03</div>
+        <div class="headline">RESULTADOS<br>QUE <span class="hl">CRECEN</span><br>CON EL TIEMPO</div>
+        <div class="copy">El posicionamiento orgánico es una inversión que se acumula. <b>Cuanto antes empezás, antes liderás</b> en tu área de práctica.</div>
+        <div class="dots">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 · CTA -->
+  <div class="slide">
+    <div class="bg-solid" style="background: linear-gradient(145deg, #0f0800 0%, #1e0e02 50%, #0a0500 100%);"></div>
+    <div class="ov-stripe"></div>
+    <div style="position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(212,98,26,0.18) 0%,transparent 70%);z-index:1;pointer-events:none;"></div>
+    <div style="position:absolute;left:-80px;bottom:-80px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(245,184,0,0.1) 0%,transparent 70%);z-index:1;pointer-events:none;"></div>
+    <div class="content">
+      <div class="topbar">
+        <div class="handle">@clickderechomkt</div>
+        <div class="slide-num">07 / 07</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="body">
+        <div class="cta-tag">· Marketing Jurídico ·</div>
+        <div class="cta-big">¿QUERÉS<br>APARECER<br><span class="hl">PRIMERO?</span></div>
+        <div class="cta-copy">Trabajamos con estudios jurídicos para construir su presencia digital y generar consultas reales desde Google.</div>
+        <div class="cta-handle">@clickderechomkt</div>
+        <div class="cta-btn">Escribinos por DM &nbsp;→</div>
+        <div class="dots" style="margin-top:32px;">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="controls">
+  <button class="ctrl" onclick="go(-1)">←</button>
+  <div class="ctrl-info"><b id="cn">1</b> / 7</div>
+  <button class="ctrl" onclick="go(1)">→</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let cur = 0;
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = ((n % slides.length) + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    document.getElementById('cn').textContent = cur + 1;
+  }
+  function go(dir) { show(cur + dir); }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight','ArrowDown'].includes(e.key)) go(1);
+    if (['ArrowLeft','ArrowUp'].includes(e.key)) go(-1);
+  });
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+  });
+  function scaleStage() {
+    const s = Math.min(window.innerWidth / 1080, (window.innerHeight - 80) / 1350) * 0.97;
+    document.getElementById('stage').style.transform = `scale(${s})`;
+  }
+  scaleStage();
+  window.addEventListener('resize', scaleStage);
+</script>
+</body>
+</html>
