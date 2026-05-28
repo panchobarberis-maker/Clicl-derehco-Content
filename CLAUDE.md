@@ -22,7 +22,7 @@
 **Problema:** Chrome headless bloquea la carga de imágenes con rutas `file://` relativas (`../imagenes/`). Las imágenes aparecen completamente negras.
 
 **Solución SIEMPRE antes de renderizar:**
-1. Levantar servidor HTTP local:
+1. Levantar servidor HTTP local (el script lo hace automáticamente, pero si falla hacerlo a mano):
    ```bash
    cd /home/user/Clicl-derehco-Content && python3 -m http.server 8765 &
    ```
@@ -30,6 +30,11 @@
    ```javascript
    html = html.replace(/url\('\.\.\/imagenes\//g, `url('http://localhost:8765/imagenes/`);
    html = html.replace(/url\("\.\.\/imagenes\//g, `url("http://localhost:8765/imagenes/`);
+   ```
+3. **El script `/tmp/screenshot_carousel.js` ya levanta el servidor automáticamente** si detecta que no está corriendo. Si las imágenes siguen negras, matar el proceso y reiniciar:
+   ```bash
+   pkill -f "http.server 8765"
+   cd /home/user/Clicl-derehco-Content && python3 -m http.server 8765 &
    ```
 
 ## Opacidad de overlays
